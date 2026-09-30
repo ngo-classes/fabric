@@ -1,17 +1,17 @@
 services:
-  fabric-jupyter:
+  fabric:
     build:
       context: .
       dockerfile: .docker/Dockerfile
-    image: fabric-jupyter:local
-    container_name: fabric-jupyter
-    working_dir: /app
+    image: linhbngo/fabric:local
+    container_name: fabric
+    working_dir: /home/fabric
     ports:
       - "8888:8888"
       - "3000:3000"
       - "4000:4000"
       - "5555:5555"
     volumes:
-      - .:/app
-      - ./home/fabric/.fabric:/home/fabric/.fabric
-      - ./home/fabric/.ssh:/home/fabric/.ssh
+      - ./csc468:/home/fabric/csc468
+      - ./csc478:/home/fabric/csc478
+      - ./home/fabric/:/home/fabric/
