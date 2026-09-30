@@ -1,0 +1,10 @@
+all:
+  children:
+    fabric_nodes:
+      hosts:
+        node1:
+          ansible_host: "2001:5e8:ff00:ffff:f816:3eff:fec2:71d6"
+          ansible_user: "ubuntu"
+          ansible_ssh_private_key_file: "/home/fabric/.ssh/slice_key"
+          ansible_ssh_common_args: "-F /home/fabric/work/fabric_config/ssh_config"
+          ansible_python_interpreter: "/usr/bin/python3"

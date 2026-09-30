@@ -1,0 +1,48 @@
+---
+- name: Deploy a Docker registry into the swarm
+  hosts: swarm_manager
+  become: false
+  vars:
+    registry_name: registry
+    registry_port: 30000
+    registry_data_dir: /opt/registry
+
+  tasks:
+    - name: Create registry data directory on manager
+      become: true
+      file:
+        path: "{{ registry_data_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Check whether registry service already exists
+      command: docker service inspect {{ registry_name }}
+      register: registry_inspect
+      failed_when: false
+      changed_when: false
+
+    - name: Create registry service
+      command:
+        argv:
+          - docker
+          - service
+          - create
+          - --name
+          - "{{ registry_name }}"
+          - --constraint
+          - node.role==manager
+          - --publish
+          - "published={{ registry_port }},target=5000"
+          - --mount
+          - "type=bind,src={{ registry_data_dir }},dst=/var/lib/registry"
+          - registry:2
+      when: registry_inspect.rc != 0
+
+    - name: Show registry service
+      command: docker service ls
+      register: registry_ls
+      changed_when: false
+
+    - name: Print registry service list
+      debug:
+        var: registry_ls.stdout_lines

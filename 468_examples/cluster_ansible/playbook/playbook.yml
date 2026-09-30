@@ -1,0 +1,219 @@
+---
+- name: Setup MongoDB server
+  hosts: dbservers
+  become: true
+  collections:
+    - community.mongodb
+
+  tasks:
+    - name: Install base packages
+      ansible.builtin.apt:
+        name:
+          - gnupg
+          - curl
+          - python3-pip
+        update_cache: true
+        state: present
+
+    - name: Add MongoDB repository
+      ansible.builtin.deb822_repository:
+        name: mongodb-org-8.0
+        types: deb
+        uris: https://repo.mongodb.org/apt/ubuntu
+        suites: "{{ ansible_distribution_release }}/mongodb-org/8.0"
+        components: multiverse
+        signed_by: https://pgp.mongodb.com/server-8.0.asc
+        state: present
+
+    - name: Install MongoDB
+      ansible.builtin.apt:
+        name:
+          - mongodb-org
+        update_cache: true
+        state: present
+
+    - name: Install pymongo for Ansible MongoDB module
+      ansible.builtin.pip:
+        name: pymongo
+
+    - name: Configure mongod
+      ansible.builtin.copy:
+        dest: /etc/mongod.conf
+        mode: "0644"
+        content: |
+          storage:
+            dbPath: /var/lib/mongodb
+          systemLog:
+            destination: file
+            logAppend: true
+            path: /var/log/mongodb/mongod.log
+          net:
+            port: 27017
+            bindIp: 127.0.0.1,{{ private_ip }}
+          security:
+            authorization: enabled
+      notify: restart mongod
+
+    - name: Start mongod
+      ansible.builtin.systemd_service:
+        name: mongod
+        enabled: true
+        state: started
+
+    - name: Create MongoDB admin user
+      community.mongodb.mongodb_user:
+        database: admin
+        name: "{{ mongo_admin_user }}"
+        password: "{{ mongo_admin_password }}"
+        roles:
+          - db: admin
+            role: root
+        state: present
+        create_for_localhost_exception: /root/.mongodb_admin_created
+
+    - name: Create MongoDB app user
+      community.mongodb.mongodb_user:
+        login_user: "{{ mongo_admin_user }}"
+        login_password: "{{ mongo_admin_password }}"
+        login_database: admin
+        database: "{{ mongo_app_db }}"
+        name: "{{ mongo_app_user }}"
+        password: "{{ mongo_app_password }}"
+        roles:
+          - db: "{{ mongo_app_db }}"
+            role: readWrite
+        state: present
+
+  handlers:
+    - name: restart mongod
+      ansible.builtin.systemd_service:
+        name: mongod
+        state: restarted
+
+
+- name: Setup web server
+  hosts: webservers
+  become: true
+
+  tasks:
+    - name: Install packages
+      ansible.builtin.apt:
+        name:
+          - nginx
+          - python3-pip
+        update_cache: true
+        state: present
+
+    - name: Create app directory
+      ansible.builtin.file:
+        path: /root/demoapp
+        state: directory
+        mode: "0755"
+
+    - name: Install Python packages
+      ansible.builtin.pip:
+        name:
+          - flask
+          - pymongo
+
+    - name: Write Flask app
+      ansible.builtin.copy:
+        dest: /root/demoapp/app.py
+        mode: "0755"
+        content: |
+          from flask import Flask
+          from pymongo import MongoClient
+
+          app = Flask(__name__)
+
+          client = MongoClient("mongodb://{{ mongo_app_user }}:{{ mongo_app_password }}@{{ mongodb_private_ip }}:27017/{{ mongo_app_db }}?authSource={{ mongo_app_db }}")
+          db = client["{{ mongo_app_db }}"]
+          col = db["visits"]
+
+          @app.route("/")
+          def index():
+              col.update_one(
+                  {"_id": "counter"},
+                  {"$inc": {"count": 1}, "$setOnInsert": {"message": "Hello from MongoDB"}},
+                  upsert=True
+              )
+              doc = col.find_one({"_id": "counter"})
+              return f"""
+              <h1>Simple Flask + MongoDB Demo</h1>
+              <p>Message: {doc.get('message')}</p>
+              <p>Visits: {doc.get('count')}</p>
+              """
+
+          if __name__ == "__main__":
+              app.run(host="127.0.0.1", port=5000)
+
+    - name: Write systemd service
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/demoapp.service
+        mode: "0644"
+        content: |
+          [Unit]
+          Description=Simple Demo App
+          After=network.target
+
+          [Service]
+          User=root
+          WorkingDirectory=/root/demoapp
+          ExecStart=/usr/bin/python3 /root/demoapp/app.py
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target
+      notify: reload systemd
+
+    - name: Write nginx config
+      ansible.builtin.copy:
+        dest: /etc/nginx/sites-available/demoapp
+        mode: "0644"
+        content: |
+          server {
+              listen 80 default_server;
+              server_name _;
+              location / {
+                  proxy_pass http://127.0.0.1:5000;
+                  proxy_set_header Host $host;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              }
+          }
+      notify: restart nginx
+
+    - name: Enable nginx site
+      ansible.builtin.file:
+        src: /etc/nginx/sites-available/demoapp
+        dest: /etc/nginx/sites-enabled/demoapp
+        state: link
+      notify: restart nginx
+
+    - name: Remove default nginx site
+      ansible.builtin.file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+      notify: restart nginx
+
+    - name: Start app service
+      ansible.builtin.systemd_service:
+        name: demoapp
+        enabled: true
+        state: started
+        daemon_reload: true
+
+    - name: Start nginx
+      ansible.builtin.systemd_service:
+        name: nginx
+        enabled: true
+        state: started
+
+  handlers:
+    - name: reload systemd
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+
+    - name: restart nginx
+      ansible.builtin.systemd_service:
+        name: nginx
+        state: restarted

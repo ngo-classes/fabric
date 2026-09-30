@@ -1,0 +1,30 @@
+all:
+  vars:
+    ansible_become: true
+    mongo_admin_user: "admin"
+    mongo_admin_password: "admin123"
+    mongo_app_db: "demoapp"
+    mongo_app_user: "demoapp"
+    mongo_app_password: "demo123"
+
+  children:
+    webservers:
+      hosts:
+        web_node:
+          ansible_host: "133.69.160.146"
+          ansible_user: "ubuntu"
+          ansible_ssh_private_key_file: "/home/fabric/.ssh/slice_key"
+          ansible_ssh_common_args: "-F /home/fabric/work/fabric_config/ssh_config"
+          ansible_python_interpreter: "/usr/bin/python3"
+          private_ip: "192.168.1.1"
+          mongodb_private_ip: "192.168.1.2"
+
+    dbservers:
+      hosts:
+        db_node:
+          ansible_host: "133.69.160.164"
+          ansible_user: "ubuntu"
+          ansible_ssh_private_key_file: "/home/fabric/.ssh/slice_key"
+          ansible_ssh_common_args: "-F /home/fabric/work/fabric_config/ssh_config"
+          ansible_python_interpreter: "/usr/bin/python3"
+          private_ip: "192.168.1.2"

@@ -1,0 +1,115 @@
+---
+- name: Install Docker Engine on all nodes
+  hosts: all
+  become: true
+  vars:
+    docker_fixed_cidr_v6: "fd00:1::/64"
+
+  tasks:
+    - name: Install prerequisite packages
+      apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+        state: present
+        update_cache: true
+
+    - name: Create Docker keyring directory
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: "0755"
+
+    - name: Download Docker GPG key
+      shell: |
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /tmp/docker.asc
+        gpg --dearmor -o /etc/apt/keyrings/docker.gpg /tmp/docker.asc
+        chmod a+r /etc/apt/keyrings/docker.gpg
+      args:
+        creates: /etc/apt/keyrings/docker.gpg
+
+    - name: Add Docker apt repository
+      shell: |
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo ${VERSION_CODENAME}) stable" > /etc/apt/sources.list.d/docker.list
+      args:
+        creates: /etc/apt/sources.list.d/docker.list
+
+    - name: Install Docker Engine
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+        update_cache: true
+
+    - name: Ensure docker group exists
+      group:
+        name: docker
+        state: present
+
+    - name: Add ansible user to docker group
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: true
+
+    - name: Ensure IPv4 forwarding is enabled
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: "1"
+        state: present
+        reload: true
+
+    - name: Ensure IPv6 forwarding is enabled
+      sysctl:
+        name: net.ipv6.conf.all.forwarding
+        value: "1"
+        state: present
+        reload: true
+
+    - name: Ensure Docker config directory exists
+      file:
+        path: /etc/docker
+        state: directory
+        mode: "0755"
+
+    - name: Configure Docker daemon
+      copy:
+        dest: /etc/docker/daemon.json
+        mode: "0644"
+        content: |
+          {
+            "insecure-registries": ["{{ swarm_registry }}"],
+            "ipv6": true,
+            "fixed-cidr-v6": "{{ docker_fixed_cidr_v6 }}"
+          }
+      notify: Restart docker
+
+    - name: Enable Docker service
+      systemd:
+        name: docker
+        enabled: true
+        state: started
+
+    - name: Reset SSH connection so docker group is active
+      meta: reset_connection
+
+    - name: Verify ansible user can run docker without sudo
+      become: false
+      command: docker version
+      register: docker_test
+      changed_when: false
+
+    - name: Show docker test output
+      debug:
+        var: docker_test.stdout_lines
+
+  handlers:
+    - name: Restart docker
+      systemd:
+        name: docker
+        state: restarted

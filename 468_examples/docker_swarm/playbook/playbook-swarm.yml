@@ -1,0 +1,81 @@
+---
+
+- name: Initialize swarm on manager
+  hosts: swarm_manager
+  become: true
+  tasks:
+    - name: Check local swarm state
+      shell: docker info --format '{{"{{.Swarm.LocalNodeState}}"}}'
+      register: manager_swarm_state
+      changed_when: false
+
+    - name: Initialize swarm
+      shell: docker swarm init --advertise-addr {{ internal_ip }}:2377
+      when: manager_swarm_state.stdout != "active"
+
+    - name: Get worker join token
+      shell: docker swarm join-token -q worker
+      register: worker_join_token
+      changed_when: false
+
+    - name: Save swarm join data for later plays
+      add_host:
+        name: swarm_bootstrap
+        worker_token: "{{ worker_join_token.stdout }}"
+        manager_ip: "{{ internal_ip }}"
+
+- name: Join worker nodes to swarm
+  hosts: swarm_workers
+  become: true
+  tasks:
+    - name: Check local swarm state
+      shell: docker info --format '{{"{{.Swarm.LocalNodeState}}"}}'
+      register: worker_swarm_state
+      changed_when: false
+
+    - name: Join swarm as worker
+      shell: docker swarm join --token {{ hostvars['swarm_bootstrap']['worker_token'] }} {{ hostvars['swarm_bootstrap']['manager_ip'] }}:2377
+      when: worker_swarm_state.stdout != "active"
+
+- name: Create a simple overlay network and demo services
+  hosts: swarm_manager
+  become: true
+  tasks:
+    - name: Create overlay network
+      shell: |
+        docker network ls --format '{{"{{.Name}}"}}' | grep -qx swarm-net || \
+        docker network create --driver overlay --attachable swarm-net
+      args:
+        executable: /bin/bash
+
+    - name: Create registry service on manager
+      shell: |
+        docker service ls --format '{{"{{.Name}}"}}' | grep -qx registry || \
+        docker service create \
+          --name registry \
+          --constraint 'node.role==manager' \
+          --publish published=5000,target=5000 \
+          registry:2
+      args:
+        executable: /bin/bash
+
+    - name: Create demo nginx service with 4 replicas
+      shell: |
+        docker service ls --format '{{"{{.Name}}"}}' | grep -qx web || \
+        docker service create \
+          --name web \
+          --network swarm-net \
+          --replicas 4 \
+          --publish published=8080,target=80 \
+          nginx:alpine
+      args:
+        executable: /bin/bash
+
+    - name: Show swarm nodes
+      shell: docker node ls
+      register: swarm_nodes
+      changed_when: false
+
+    - name: Show node list
+      debug:
+        var: swarm_nodes.stdout_lines

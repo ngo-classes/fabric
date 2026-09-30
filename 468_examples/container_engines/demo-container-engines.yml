@@ -1,0 +1,73 @@
+---
+- name: Demonstrate Podman, Apptainer, and containerd on FABRIC nodes
+  hosts: fabric_nodes
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Podman demo
+      ansible.builtin.command: >
+        podman run --rm --net=host docker.io/library/alpine:3.20
+        sh -c 'echo "Podman demo"; echo "hostname=$(hostname)"; echo "uid=$(id -u) gid=$(id -g)"; cat /etc/alpine-release'
+      register: podman_demo
+      changed_when: false
+
+    - name: Show Podman output
+      ansible.builtin.debug:
+        var: podman_demo.stdout_lines
+
+    - name: Apptainer demo using a Docker/OCI image
+      ansible.builtin.command: >
+        apptainer exec docker://alpine:3.20
+        sh -c 'echo "Apptainer demo"; echo "hostname=$(hostname)"; echo "uid=$(id -u) gid=$(id -g)"; cat /etc/alpine-release'
+      register: apptainer_demo
+      changed_when: false
+
+    - name: Show Apptainer output
+      ansible.builtin.debug:
+        var: apptainer_demo.stdout_lines
+
+    - name: Pull Alpine into containerd content store using ctr
+      ansible.builtin.command: ctr images pull docker.io/library/alpine:3.20
+      register: ctr_pull
+      changed_when: false
+
+    - name: Run Alpine directly with containerd ctr
+      ansible.builtin.command: >
+        ctr run --rm docker.io/library/alpine:3.20 ctr-demo
+        sh -c 'echo "containerd ctr demo"; echo "hostname=$(hostname)"; echo "uid=$(id -u) gid=$(id -g)"; cat /etc/alpine-release'
+      register: ctr_demo
+      changed_when: false
+
+    - name: Show ctr output
+      ansible.builtin.debug:
+        var: ctr_demo.stdout_lines
+
+    - name: Run Alpine with nerdctl
+      ansible.builtin.command: >
+        nerdctl run --rm --net=host docker.io/library/alpine:3.20
+        sh -c 'echo "nerdctl demo"; echo "hostname=$(hostname)"; echo "uid=$(id -u) gid=$(id -g)"; cat /etc/alpine-release'
+      register: nerdctl_demo
+      changed_when: false
+
+    - name: Show nerdctl output
+      ansible.builtin.debug:
+        var: nerdctl_demo.stdout_lines
+
+    - name: List Podman images
+      ansible.builtin.command: podman images
+      register: podman_images
+      changed_when: false
+
+    - name: List containerd images
+      ansible.builtin.command: ctr images ls
+      register: ctr_images
+      changed_when: false
+
+    - name: Compare image stores
+      ansible.builtin.debug:
+        msg:
+          - "Podman images:"
+          - "{{ podman_images.stdout_lines }}"
+          - "containerd images:"
+          - "{{ ctr_images.stdout_lines }}"

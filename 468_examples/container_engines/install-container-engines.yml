@@ -1,0 +1,146 @@
+---
+- name: Install Podman, Apptainer, containerd, and nerdctl on FABRIC Ubuntu nodes
+  hosts: fabric_nodes
+  become: true
+  gather_facts: true
+
+  vars:
+    container_user: "{{ ansible_user | default(ansible_facts.user_id) }}"
+
+    # Update this version if a newer nerdctl release is desired.
+    nerdctl_version: "2.2.2"
+
+    nerdctl_arch_map:
+      x86_64: amd64
+      aarch64: arm64
+
+    nerdctl_arch: "{{ nerdctl_arch_map[ansible_architecture] | default('amd64') }}"
+    nerdctl_url: "https://github.com/containerd/nerdctl/releases/download/v{{ nerdctl_version }}/nerdctl-{{ nerdctl_version }}-linux-{{ nerdctl_arch }}.tar.gz"
+
+  pre_tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+  tasks:
+    - name: Install base packages, Podman, containerd, runc, and CNI plugins
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+          - software-properties-common
+          - python3-apt
+          - python3-launchpadlib
+          - uidmap
+          - slirp4netns
+          - fuse-overlayfs
+          - runc
+          - containernetworking-plugins
+          - containerd
+          - podman
+        state: present
+
+    - name: Add Apptainer Ubuntu PPA
+      ansible.builtin.apt_repository:
+        repo: ppa:apptainer/ppa
+        state: present
+        update_cache: true
+
+    - name: Install Apptainer
+      ansible.builtin.apt:
+        name: apptainer
+        state: present
+
+    - name: Ensure containerd configuration directory exists
+      ansible.builtin.file:
+        path: /etc/containerd
+        state: directory
+        mode: "0755"
+
+    - name: Generate default containerd configuration if missing
+      ansible.builtin.shell: |
+        containerd config default > /etc/containerd/config.toml
+      args:
+        creates: /etc/containerd/config.toml
+      notify: Restart containerd
+
+    - name: Use systemd cgroup driver in containerd config
+      ansible.builtin.replace:
+        path: /etc/containerd/config.toml
+        regexp: "SystemdCgroup = false"
+        replace: "SystemdCgroup = true"
+      notify: Restart containerd
+
+    - name: Enable and start containerd
+      ansible.builtin.systemd:
+        name: containerd
+        enabled: true
+        state: started
+
+    - name: Install nerdctl CLI for containerd
+      ansible.builtin.unarchive:
+        src: "{{ nerdctl_url }}"
+        dest: /usr/local/bin
+        remote_src: true
+        creates: /usr/local/bin/nerdctl
+
+    - name: Ensure nerdctl is executable
+      ansible.builtin.file:
+        path: /usr/local/bin/nerdctl
+        mode: "0755"
+
+    - name: Configure subuid for rootless Podman
+      ansible.builtin.lineinfile:
+        path: /etc/subuid
+        regexp: "^{{ container_user }}:"
+        line: "{{ container_user }}:100000:65536"
+        create: true
+
+    - name: Configure subgid for rootless Podman
+      ansible.builtin.lineinfile:
+        path: /etc/subgid
+        regexp: "^{{ container_user }}:"
+        line: "{{ container_user }}:100000:65536"
+        create: true
+
+    - name: Enable lingering for rootless user services
+      ansible.builtin.command: "loginctl enable-linger {{ container_user }}"
+      changed_when: false
+      failed_when: false
+
+    - name: Verify Podman
+      ansible.builtin.command: podman --version
+      register: podman_version
+      changed_when: false
+
+    - name: Verify Apptainer
+      ansible.builtin.command: apptainer --version
+      register: apptainer_version
+      changed_when: false
+
+    - name: Verify containerd
+      ansible.builtin.command: containerd --version
+      register: containerd_version
+      changed_when: false
+
+    - name: Verify nerdctl
+      ansible.builtin.command: nerdctl --version
+      register: nerdctl_version_output
+      changed_when: false
+
+    - name: Show installed versions
+      ansible.builtin.debug:
+        msg:
+          - "{{ podman_version.stdout }}"
+          - "{{ apptainer_version.stdout }}"
+          - "{{ containerd_version.stdout }}"
+          - "{{ nerdctl_version_output.stdout }}"
+
+  handlers:
+    - name: Restart containerd
+      ansible.builtin.systemd:
+        name: containerd
+        state: restarted

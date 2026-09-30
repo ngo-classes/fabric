@@ -1,0 +1,17 @@
+services:
+  fabric-jupyter:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+    image: fabric-jupyter:local
+    container_name: fabric-jupyter
+    working_dir: /app
+    ports:
+      - "8888:8888"
+      - "3000:3000"
+      - "4000:4000"
+      - "5555:5555"
+    volumes:
+      - .:/app
+      - ./home/fabric/.fabric:/home/fabric/.fabric
+      - ./home/fabric/.ssh:/home/fabric/.ssh

@@ -1,0 +1,163 @@
+---
+- name: Build and deploy ram_coin on Docker Swarm
+  hosts: swarm_manager
+  become: false
+  vars:
+    repo_url: "https://github.com/CSC468-WCU/ram_coin.git"
+    repo_dest: "/home/{{ ansible_user }}/ram_coin"
+    registry: "127.0.0.1:5000"
+    tag: "v0.1"
+    network_name: "ramcoins"
+    services:
+      - hasher
+      - rng
+      - webui
+      - worker
+
+  tasks:
+    - name: Ensure git is installed
+      become: true
+      apt:
+        name: git
+        state: present
+        update_cache: true
+
+    - name: Clone or update ram_coin repository
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ repo_dest }}"
+        version: HEAD
+        update: true
+        force: true
+
+    - name: Build ram_coin images
+      command:
+        argv:
+          - docker
+          - build
+          - -t
+          - "{{ registry }}/{{ item }}:{{ tag }}"
+          - "./{{ item }}"
+      args:
+        chdir: "{{ repo_dest }}"
+      loop: "{{ services }}"
+
+    - name: Push ram_coin images
+      command:
+        argv:
+          - docker
+          - push
+          - "{{ registry }}/{{ item }}:{{ tag }}"
+      loop: "{{ services }}"
+
+    - name: Show registry catalog
+      command:
+        argv:
+          - curl
+          - "http://127.0.0.1:5000/v2/_catalog"
+      register: registry_catalog
+      changed_when: false
+
+    - name: Print registry catalog
+      debug:
+        var: registry_catalog.stdout
+
+    - name: Check whether overlay network exists
+      command:
+        argv:
+          - docker
+          - network
+          - inspect
+          - "{{ network_name }}"
+      register: network_check
+      failed_when: false
+      changed_when: false
+
+    - name: Create overlay network
+      command:
+        argv:
+          - docker
+          - network
+          - create
+          - --driver
+          - overlay
+          - "{{ network_name }}"
+      when: network_check.rc != 0
+
+    - name: Check whether redis service exists
+      command:
+        argv:
+          - docker
+          - service
+          - inspect
+          - redis
+      register: redis_check
+      failed_when: false
+      changed_when: false
+
+    - name: Create redis service
+      command:
+        argv:
+          - docker
+          - service
+          - create
+          - --network
+          - "{{ network_name }}"
+          - --name
+          - redis
+          - redis
+      when: redis_check.rc != 0
+
+    - name: Check whether application services exist
+      command:
+        argv:
+          - docker
+          - service
+          - inspect
+          - "{{ item }}"
+      register: service_checks
+      failed_when: false
+      changed_when: false
+      loop: "{{ services }}"
+
+    - name: Create application services
+      command:
+        argv:
+          - docker
+          - service
+          - create
+          - --network
+          - "{{ network_name }}"
+          - --detach=true
+          - --name
+          - "{{ item.item }}"
+          - "{{ registry }}/{{ item.item }}:{{ tag }}"
+      when: item.rc != 0
+      loop: "{{ service_checks.results }}"
+
+    - name: Publish webui on port 8000
+      command:
+        argv:
+          - docker
+          - service
+          - update
+          - --publish-add
+          - "8000:80"
+          - webui
+      register: webui_publish
+      failed_when:
+        - webui_publish.rc != 0
+        - "'published ports are unchanged' not in (webui_publish.stderr | default(''))"
+
+    - name: Show swarm services
+      command:
+        argv:
+          - docker
+          - service
+          - ls
+      register: service_list
+      changed_when: false
+
+    - name: Print swarm services
+      debug:
+        var: service_list.stdout_lines

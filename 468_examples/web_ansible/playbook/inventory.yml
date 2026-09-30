@@ -1,0 +1,10 @@
+all:
+  children:
+    webservers:
+      hosts:
+        control_node:
+          ansible_host: "2001:610:2d0:fabc:f816:3eff:fe6c:f206"
+          ansible_user: "ubuntu"
+          ansible_ssh_private_key_file: "/home/fabric/.ssh/slice_key"
+          ansible_ssh_common_args: "-F /home/fabric/work/fabric_config/ssh_config"
+          ansible_python_interpreter: "/usr/bin/python3"

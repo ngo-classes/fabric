@@ -1,0 +1,552 @@
+{
+    "configure_and_validate": {
+        "title": "Configure Environment",
+        "description_short": "Configure you Environment including creating the `fabric_rc` and `ssh_config` files.",
+        "description_long": "",
+        "location": "configure_and_validate",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "kthare10@email.unc.edu"
+        ]
+    },
+    "hello_fabric": {
+        "title": "Hello, FABRIC",
+        "description_short": "Simple First Slice Example.",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/hello_fabric",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "list_all_resources": {
+        "title": "Listing Available Resources",
+        "description_short": "List resource capacity and availability. Output options: Text, Pandas, JSON, and Python List[Dict]. Find sites containing available components and capacities.",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/sites_and_resources",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu",
+            "kthare10@email.unc.edu"
+        ]
+    },
+    "create_slice": {
+        "title": "Validate and Submit a Slice with Advanced Scheduling Options",
+        "description_short": "Options that can be used when creating, validating, and submitting current or future slices.",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/create_slice",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu",
+            "kthare10@email.unc.edu"
+        ]
+    },
+    "delete_slice": {
+        "title": "Delete Slice(s)",
+        "description_short": "Options for deleting a slice or slices.",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/delete_slice",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "list_slices": {
+        "title": "List All Slice(s), Slice's Nodes, Networks, Components, and Interfaces",
+        "description_short": "Options for listing slice(s).",
+        "description_long": "Find and list parts of slice(s).",
+        "location": "fabric_examples/fablib_api/slices",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu",
+            "kthare10@email.unc.edu"
+        ]
+    },
+    "renew_slice": {
+        "title": "Extending a Slice Reservation",
+        "description_short": "Extend a slice reservation for a longer period of time.",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/renew_slice",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu",
+            "kthare10@email.unc.edu"
+        ]
+    },
+    "save_and_load": {
+        "title": "Save/Load Slices",
+        "description_short": "Save an experimental topology and load it at a later time.",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/save_and_load",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "share_slices": {
+        "title": "Share Slices: Manage Access & List Slices",
+        "description_short": "Manage SSH keys and list available slices to collaborate within a FABRIC project.",
+        "description_long": "This artifact provides a structured approach to collaborating on FABRIC slices. It includes functionality for listing available slices in a project, accessing a collaborator’s slice, and managing SSH key access for granting or revoking permissions. Users can explore and retrieve shared slices while securely modifying access control using SSH key management.",
+        "location": "fabric_examples/fablib_api/share_slices",
+        "tags": ["fabric", "example", "tutorial"],
+        "visibility": "public",
+        "authors": [
+            "kthare10@email.unc.edu"
+        ]
+    },
+    "modify_slice": {
+        "title": "Modifying Slices",
+        "description_short": "Modify an existing slice by adding/removing resources.",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/modify_slice",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "kthare10@email.unc.edu"
+        ]
+    },
+    "customizing_nodes": {
+        "title": "Customizing Nodes",
+        "description_short": "Set node properties (site, image, cores, ram, disk, etc.).",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/customizing_nodes",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "ssh_to_nodes": {
+        "title": "Execute Commands on Nodes",
+        "description_short": "Show how to remotely log into a running FABRIC node.",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/ssh_to_nodes",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "ssh_tunnels": {
+        "title": "SSH Tunnels",
+        "description_short": "Create SSH tunnels from your local machine (i.e., your laptop) to FABRIC Nodes.",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/ssh_tunnels",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "local_disk": {
+        "title": "Local Disk",
+        "description_short": "Create a node with a custom local disk size.",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/local_disk",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "basic_nvme_devices": {
+        "title": "NVMe Devices",
+        "description_short": "Create a node with an NVMe device.",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/basic_nvme_devices",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "persistent_storage": {
+        "title": "Persistent Storage",
+        "description_short": "Connect to your project's persistent storage volume.",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/persistent_storage",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "fabric_all_gpus": {
+        "title": "All FABRIC GPUs: Tesla T4, RTX6000, A30, A40",
+        "description_short": "Create a node with any GPU type.",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/fabric_all_gpus",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "create_l3network_fabnet_ipv4": {
+        "title": "FABNet IPv4 (Layer 3)",
+        "description_short": "Connect to FABRIC's IPv4 internet",
+        "description_long": "Connect to FABRIC's IPv4 internet with three configuration options - auto, manual or user defined.",
+        "location": "fabric_examples/fablib_api/create_l3network_fabnet_ipv4",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "create_l3network_fabnet_ipv4_ext": {
+        "title": "FABNet IPv4 Ext (Layer 3)",
+        "description_short": "Connect to FABRIC's IPv4 internet with external access",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/create_l3network_fabnet_ipv4ext_manual",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "kthare10@email.unc.edu"
+        ]
+    },
+    "create_l3network_fabnet_ipv6": {
+        "title": "FABNet IPv6 (Layer 3)",
+        "description_short": "Connect to FABRIC's IPv6 internet",
+        "description_long": "Connect to FABRIC's IPv6 internet with three configuration options - auto, manual or user defined",
+        "location": "fabric_examples/fablib_api/create_l3network_fabnet_ipv6",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "create_l3network_fabnet_ipv6_ext": {
+        "title": "FABNet IPv6 Ext (Layer 3)",
+        "description_short": "Connect to FABRIC's IPv6 internet with external access",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/create_l3network_fabnet_ipv6ext_manual",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "kthare10@email.unc.edu"
+        ]
+    },
+    "create_l2network_basic": {
+        "title": "Local Ethernet (Layer 2)",
+        "description_short": "Create a private local Ethernet network on a FABRIC site",
+        "description_long": "Create a private local Ethernet network on a FABRIC site with three configuration options - auto, manual or user defined",
+        "location": "fabric_examples/fablib_api/create_l2network_basic",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "create_l2network_wide_area": {
+        "title": "Wide Area Link (Layer 2) - auto, manual, ERO or user defined",
+        "description_short": "Create a private WAN Ethernet link between FABRIC sites",
+        "description_long": "Create a private WAN Ethernet link between FABRIC sites with three configuration options - auto, manual, explicit route options(ERO) or user defined",
+        "location": "fabric_examples/fablib_api/create_l2network_wide_area",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "create_port_mirror": {
+        "title": "Port Mirroring",
+        "description_short": "Listen in on traffic in FABRIC dataplane using PortMirror service",
+        "description_long": "Listen in on traffic in FABRIC dataplane using PortMirror service - Infrastructure Port Mirroring or InSlice Port Mirroring",
+        "location": "fabric_examples/fablib_api/create_port_mirror",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "kthare10@email.unc.edu"
+        ]
+    },
+    "sub_interfaces": {
+        "title": "Sub Interfaces",
+        "description_short": "Create VLAN-tagged sub-interfaces for Smart NICs, enabling multiple Network Services connections.",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/sub_interfaces",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "kthare10@email.unc.edu"
+        ]
+    },
+    "fabric_fpgas": {
+        "title": "Provision a single FPGA and/or configure it using ESnet workflow",
+        "description_short": "Provision a single FPGA and/or configure it using ESnet workflow.",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/fabric_fpgas",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "upload_and_execute": {
+        "title": "Upload and Execute Scripts",
+        "description_short": "Upload a script and execute it.",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/upload_and_execute",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "parallel_config": {
+        "title": "Parallel Experiment Configuration",
+        "description_short": "Use threads to configure experiments in parallel.",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/parallel_config",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "post_boot_tasks": {
+        "title": "Post Boot Tasks",
+        "description_short": "Define post boot tasks with or without templates to upload files and execute commands.",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/post_boot_tasks",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "docker_containers": {
+        "title": "Deploy Docker Containers",
+        "description_short": "Docker",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/docker_containers",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "add_keys_into_slice": {
+        "title": "Adding other user's keys into slice",
+        "description_short": "Add new keys on submit or add later via POA (Perform Operational Action).",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/other_ssh_keys",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "kthare10@email.unc.edu"
+        ]
+    },
+    "FRRouting": {
+        "title": "FRRouting OSPF",
+        "description_short": "Example of deploying OSPF across a wide-area using FRRouting (similar to Quagga).",
+        "description_long": "",
+        "location": "fabric_examples/complex_recipes/FRRouting",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "openvswitch": {
+        "title": "OpenVSwitch",
+        "description_short": "Example of deploying OpenVSwitch in a node.",
+        "description_long": "",
+        "location": "fabric_examples/complex_recipes/openvswitch",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "kthare10@email.unc.edu"
+        ]
+    },
+    "iperf3": {
+        "title": "iPerf3",
+        "description_short": "Test bandwidth across your FABRIC slice.",
+        "description_long": "Test bandwidth across your FABRIC slice. Apply CPU Pinning and Numa tuning with NIC_Basic or Smart NICs and test bandwidth across your FABRIC slice.",
+        "location": "fabric_examples/complex_recipes/iPerf3",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu",
+            "kthare10@email.unc.edu"
+        ]
+    },
+    "dpdk_smart_nic": {
+        "title": "DPDK and Pktgen with Smart NICs",
+        "description_short": "Program your smart nics with DPDK.",
+        "description_long": "",
+        "location": "fabric_examples/complex_recipes/networking/programmable_networking/dpdk_smart_nic",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "kthare10@email.unc.edu"
+        ]
+    },
+    "peering_client": {
+        "title": "Peering Client",
+        "description_short": "Setting up a PEERING client on FABRIC",
+        "description_long": "",
+        "location": "fabric_examples/complex_recipes/networking/peering_client",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "lom2019@ufmg.br",
+            "kthare10@email.unc.edu"
+        ]
+    },
+    "grafana_prometheus_servers": {
+        "title": "Measuring and Visualizing with Grafana and Prometheus",
+        "description_short": "Deploy a Grafana/Prometheus services on a FABIRC node using Docker. Create a slice that can be monitored by a Grafana/Prometheus server.",
+        "description_long": "",
+        "location": "fabric_examples/complex_recipes/grafana_prometheus_servers",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "kubernetes": {
+        "title": "Kubernetes Cluster",
+        "description_short": "Create a private Kubernetes cluster on FABRIC resources.",
+        "description_long": "",
+        "location": "fabric_examples/complex_recipes/kubernetes",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "tailscale": {
+        "title": "Tailscale Mesh VPN",
+        "description_short": "Create a private mesh VPN with [Tailscale](http://tailscale.com) to accesss and manage your slice.",
+        "description_long": "",
+        "location": "fabric_examples/complex_recipes/tailscale",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "p4_labs_bmv2": {
+        "title": "P4 Labs (BMv2)",
+        "description_short": "Lab series on P4 programmable switches using the Behavioral Model (BMv2).",
+        "description_long": "",
+        "location": "fabric_examples/complex_recipes/p4_labs_bmv2",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "ekfoury@email.sc.edu"
+        ]
+    },
+    "public_demos": {
+        "title": "Demos and Tutorials",
+        "description_short": "Files for live demos and examples.",
+        "description_long": "",
+        "location": "fabric_examples/public_demos",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu",
+            "kthare10@email.unc.edu"
+        ]
+    },
+    "Chameleon_Facility_Port": {
+        "title": "Chameleon Facility Ports",
+        "description_short": "Create slices spanning Chameleon and FABRIC via Layer 2 or Layer 3",
+        "description_long": "",
+        "location": "fabric_examples/complex_recipes/Chameleon_Facility_Port",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "pruth@email.unc.edu"
+        ]
+    },
+    "Cloudlab_Facility_Port": {
+        "title": "CloudLab Facility Ports",
+        "description_short": "Create slices spanning Cloud Lab and FABRIC via Layer 2",
+        "description_long": "",
+        "location": "fabric_examples/complex_recipes/Cloudlab_Facility_Port",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "kissel@es.net"
+        ]
+    },
+    "owl": {
+        "title": "One-Way Latency (OWL) Measurements",
+        "description_short": "Example for setting up One-Way Latency (OWL) Measurements.",
+        "description_long": "",
+        "location": "./fabric_examples/complex_recipes/owl",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "mami.hayashida@uky.edu"
+        ]
+    },
+    "p4_switches": {
+        "title": "P4 Switches",
+        "description_short": "Create a P4 slice using Tofino switches.",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/fabric_p4_tofino_l2_network",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "kthare10@email.unc.edu"
+        ]
+    },
+    "mflib": {
+        "title": "Monitoring with MFLib Examples",
+        "description_short": "Examples for setting up automated monitoring in your slice.",
+        "description_long": "",
+        "location": "fabric_examples/mflib",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "hussam.nasir@uky.edu",
+            "charles.s.carpenter@uky.edu",
+            "yongwook.song@uky.edu",
+            "mami.hayashida@uky.edu",
+            "pinyi.shi@uky.edu"
+        ]
+    },
+    "bluefields": {
+        "title": "BlueField SmartNICs",
+        "description_short": "Create a slice using BlueField-2 Smart NICs.",
+        "description_long": "",
+        "location": "fabric_examples/fablib_api/bluefields",
+        "tags": ["fabric", "example"],
+        "visibility": "public",
+        "authors":[
+            "kthare10@email.unc.edu"
+        ]
+    },
+    "collaborative_slices": {
+        "title": "FABRIC Interconnected Slices: Ollama & Open vSwitch Deployment",
+            "description_short": "Deploy and connect FABRIC slices running Ollama for AI processing and Open vSwitch for network control.",
+        "description_long": "This artifact provides a structured approach to deploying and connecting two slices within the FABRIC testbed: one running the Ollama service with an LLM model (defaulting to deepseek-r1:7b, configurable via the .env file) and the other using Open vSwitch for network management. It includes Jupyter notebooks guiding users through site selection, container deployment, network configuration, and connectivity verification. This setup enables experimentation with multi-slice integrations, combining AI processing with advanced network control.",
+        "location": "fabric_examples/complex_recipes/collaborative_slices",
+        "tags": ["fabric", "example", "tutorial", "experiment", "experiment pattern", "reproducible research"],
+        "visibility": "public",
+        "authors":[
+            "kthare10@email.unc.edu"
+        ]
+    },
+    "llm_inference": {
+        "title": "Deploying Ollama for LLM Inference on FABRIC",
+        "description_short": "This artifact provides an example of deploying an Ollama slice on FABRIC for running large language models (LLMs). It includes setup instructions, Jupyter notebooks, and configuration files to launch an Ollama node, deploy LLM services, and run queries.",
+        "description_long": "This artifact provides resources for deploying an Ollama slice on FABRIC, enabling the execution of large language models (LLMs). It includes Jupyter notebooks and configuration files to: Launch an Ollama node with a GPU. Deploy ollama and open-webui as Docker containers. Load a default LLM (deepseek-r1:7b), with the option to configure other models. Retrieve the FabNet IP for external access. Demonstrate running queries against the LLM on FABRIC. This serves as an example of utilizing FABRIC for AI workloads and experimenting with LLM inference in a distributed testbed environment.",
+        "location": "fabric_examples/complex_recipes/collaborative_slices/ollama",
+        "tags": ["fabric", "example", "tutorial", "experiment", "experiment pattern", "reproducible research"],
+        "visibility": "public",
+        "authors":[
+            "kthare10@email.unc.edu"
+        ]
+    }
+}
