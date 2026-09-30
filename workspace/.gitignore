@@ -2,4 +2,3 @@
 *
 # Except this .gitignore file
 !.gitignore
-!entrypoint.sh

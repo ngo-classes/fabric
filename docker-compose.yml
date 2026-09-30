@@ -14,4 +14,6 @@ services:
     volumes:
       - ./csc468:/home/fabric/csc468
       - ./csc478:/home/fabric/csc478
-      - ./home/fabric/:/home/fabric/
+      - ./home/fabric/.ssh:/home/fabric/.ssh
+      - ./home/fabric/.fabric:/home/fabric/.fabric
+      - ./home/fabric/workspace:/home/fabric/workspace

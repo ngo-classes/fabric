@@ -28,12 +28,12 @@ RUN mkdir -p /home/fabric/ /app && \
     cp /tmp/docker/entrypoint.sh /home/fabric/entrypoint.sh
 
 USER fabric
-WORKDIR /app
+WORKDIR /home/fabric
 
 # Install Jupyter and project requirements as the fabric user
 RUN python -m pip install --user --upgrade pip && \
     python -m pip install --user jupyter jupyterlab && \
-    if [ -f /tmp/requirements.txt ]; then python -m pip install --user -r /tmp/docker/requirements.txt; fi
+    if [ -f /tmp/docker/requirements.txt ]; then python -m pip install --user -r /tmp/docker/requirements.txt; fi
 
 RUN echo 'if [ -f "$HOME/.fabric/fabric_rc" ]; then . "$HOME/.fabric/fabric_rc"; fi' >> "$HOME/.bashrc"
 

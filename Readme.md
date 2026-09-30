@@ -1,42 +1,83 @@
-# Jupyter Examples for Fabric Testbed
+# Local FABRIC Environment
 
-Welcome to the Fabric Testbed Jupyter Examples repository! This repository contains a collection of Jupyter Notebook 
-examples demonstrating various usage scenarios and features of the Fabric Testbed.
+This repository builds a local JupyterLab environment for working with the
+FABRIC testbed course notebooks.
 
-## About Fabric Testbed
-Fabric Testbed is a platform for building and managing virtualized network environments for research, 
-education, and experimentation. It provides users with access to programmable network resources, 
-allowing them to create, customize, and experiment with network topologies and configurations. 
-More details about the testbed can be found [here](https://portal.fabric-testbed.net/)
+## Build and configure
 
-## What's Included
-This repository includes a variety of Jupyter Notebook examples covering different aspects of the Fabric Testbed, 
-including:
+Run these commands from the repository root.
 
-- Topology Creation: Examples demonstrating how to create custom network topologies using Fabric Testbed APIs.
-- Configuration Management: Examples showcasing how to configure network devices and services within the Fabric Testbed environment.
-- Experimentation and Analysis: Examples illustrating how to conduct experiments and analyze network performance and behavior using Fabric Testbed resources.
+1. Build the Docker image:
 
-## Getting Started
+   ```bash
+   docker compose build --no-cache
+   ```
 
-The easiest way to create experiments on FABRIC is using JupyterHub. 
-You can create your private JupyterHub environment by logging into the [FABRIC portal](https://portal.fabric-testbed.net/).
+   Docker Compose tags the resulting image as `linhbngo/fabric:local`. Feel free to customize this tag in `docker-compose.yml` to your DockerHub ID. 
 
-Alternatively you can set up  your local environment by following these steps:
+2. Create the FABRIC environment file from the provided template:
 
-- Clone the Repository: Clone this repository to your local machine using Git:
+   ```bash
+   cp .docker/fabric_env.sh.template home/fabric/.fabric/fabric_rc
+   ```
+
+   Edit `home/fabric/.fabric/fabric_rc` and replace
+   `__FABRIC_PROJECT_ID__` and `__FABRIC_BASTION_USERNAME__` with your FABRIC
+   values. Place your current FABRIC token at
+   `home/fabric/.fabric/id_token.json`.
+
+3. Generate the slice (sliver) and bastion SSH key pairs:
+
+    You can generate them locally:
+
+   ```bash
+   ssh-keygen -t rsa -b 3072 -N "" -f home/fabric/.ssh/slice_key
+   ssh-keygen -t rsa -b 3072 -N "" -f home/fabric/.ssh/fabric-bastion-key
+   ```
+    
+   Register `fabric-bastion-key.pub` with your FABRIC bastion account. The
+   slice public key, `slice_key.pub`, is used when creating FABRIC slivers.
+
+    **or, you can go online and generate the pairs via FABRIC Portal's tool and download the resulting files.**
+
+## Launch
+
+Start the container in the background:
+
+```bash
+docker compose up -d
 ```
-git clone https://github.com/fabric-testbed/jupyter-examples.git
+
+Open the first CSC 468 notebook directly at:
+
+<http://localhost:8888/lab/tree/csc468/01_intro/single.ipynb>
+
+JupyterLab is configured without a local token or password, so only expose
+port 8888 on a trusted machine.
+
+Stop the environment with:
+
+```bash
+docker compose down
 ```
-- Install Dependencies: Install the necessary dependencies to run the Jupyter Notebooks as described [here](https://learn.fabric-testbed.net/knowledge-base/install-the-python-api/). Typically, this involves installing Python and Jupyter Notebook.
 
-- Explore the Examples: Open the Jupyter Notebooks (*.ipynb files) in your preferred Jupyter environment and explore the examples provided. Each notebook includes detailed instructions and explanations to guide you through the usage scenarios.
+## Mounted directories
 
-- Experiment and Customize: Experiment with the provided examples, modify them to suit your needs, and explore the capabilities of the Fabric Testbed platform.
+Docker Compose bind-mounts these host directories into `/home/fabric`:
 
-## Contributing
-We welcome contributions from the community to enhance and expand the collection of Jupyter Notebook examples. 
-Please follow the guidelines for contributing as described [here](./CONTRIBUTING.md).
+- `csc468/` as `/home/fabric/csc468`
+- `csc478/` as `/home/fabric/csc478`
+- `home/fabric/.ssh/` as `/home/fabric/.ssh`
+- `home/fabric/.fabric/` as `/home/fabric/.fabric`
+- `home/fabric/workspace/` as `/home/fabric/workspace`
 
-## License
-This repository is licensed under the MIT License.
+Changes made in these locations from JupyterLab or the container are written
+back to the corresponding host directories and survive container recreation.
+A bind mount replaces the image's contents at the same container path while
+the container is running.
+
+The `.gitignore` files in the runtime directories ignore additional generated
+content, including credentials, tokens, private keys, and workspace files.
+Only the placeholder `.gitignore` files (and the explicitly retained
+entrypoint script) are intended to be tracked. Do not commit FABRIC
+credentials or private keys.
