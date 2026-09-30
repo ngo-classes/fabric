@@ -1,4 +1,5 @@
 # Jupyter Examples for Fabric Testbed
+
 Welcome to the Fabric Testbed Jupyter Examples repository! This repository contains a collection of Jupyter Notebook 
 examples demonstrating various usage scenarios and features of the Fabric Testbed.
 
@@ -15,8 +16,6 @@ including:
 - Topology Creation: Examples demonstrating how to create custom network topologies using Fabric Testbed APIs.
 - Configuration Management: Examples showcasing how to configure network devices and services within the Fabric Testbed environment.
 - Experimentation and Analysis: Examples illustrating how to conduct experiments and analyze network performance and behavior using Fabric Testbed resources.
-
-More details available in the [Start Here Notebook](./start_here.ipynb)
 
 ## Getting Started
 
@@ -41,7 +40,3 @@ Please follow the guidelines for contributing as described [here](./CONTRIBUTING
 
 ## License
 This repository is licensed under the MIT License.
-
-## Contact
-If you have any questions, feedback, or issues related to the examples in this repository, 
-please feel free to open an issue or ask questions [here](https://learn.fabric-testbed.net/forums/forum/fabric-general-questions-and-discussion/).
