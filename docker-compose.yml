@@ -17,3 +17,4 @@ services:
       - ./home/fabric/.ssh:/home/fabric/.ssh
       - ./home/fabric/.fabric:/home/fabric/.fabric
       - ./home/fabric/workspace:/home/fabric/workspace
+      - ./utils:/home/fabric/utils
