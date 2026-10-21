@@ -1,0 +1,22 @@
+services:
+  fabric:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+    image: linhbngo/fabric:local
+    container_name: fabric
+    working_dir: /home/fabric
+    ports:
+      - "8888:8888"
+      - "3000:3000"
+      - "4000:4000"
+      - "5555:5555"
+    volumes:
+      - ./csc468:/home/fabric/csc468
+      - ./csc478:/home/fabric/csc478
+      - ./home/fabric/.ssh:/home/fabric/.ssh
+      - ./home/fabric/.fabric:/home/fabric/.fabric
+      - ./home/fabric/workspace:/home/fabric/workspace
+      - ./utils:/home/fabric/utils
+      - ../../../csc478:/opt/csc478
+      - ../../../csc468:/opt/csc468
