@@ -9,7 +9,6 @@ services:
     ports:
       - "8888:8888"
       - "3000:3000"
-      - "4000:4000"
       - "5555:5555"
     volumes:
       - ./csc468:/home/fabric/csc468
