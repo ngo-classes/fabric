@@ -1,10 +1,38 @@
 """Generate Ansible inventory and playbooks from templates."""
 
+import inspect
+import sys
 from pathlib import Path
 
-_REPO_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_TEMPLATES_DIR = _REPO_ROOT / "csc478" / "templates"
-DEFAULT_PLAYBOOK_DIR = _REPO_ROOT / "csc478" / "playbook"
+
+def _calling_program_dir():
+    """Directory of the script or notebook that loaded this module.
+
+    ``templates`` and ``playbook`` live next to that program. Notebook cells
+    have no filename; Jupyter's working directory is the notebook directory.
+    """
+    this_file = Path(__file__).resolve()
+    prefixes = {Path(sys.prefix).resolve()}
+    base_prefix = getattr(sys, "base_prefix", None)
+    if base_prefix:
+        prefixes.add(Path(base_prefix).resolve())
+
+    for frame in inspect.stack():
+        filename = frame.filename
+        if not filename or filename.startswith("<"):
+            continue
+        path = Path(filename).resolve()
+        if path == this_file:
+            continue
+        if any(path == prefix or prefix in path.parents for prefix in prefixes):
+            continue
+        return path.parent
+    return Path.cwd().resolve()
+
+
+_PROGRAM_DIR = _calling_program_dir()
+DEFAULT_TEMPLATES_DIR = _PROGRAM_DIR / "templates"
+DEFAULT_PLAYBOOK_DIR = _PROGRAM_DIR / "playbook"
 
 DEFAULT_SSH_CONFIG = "/home/fabric/work/fabric_config/ssh_config"
 DEFAULT_RKE2_TOKEN = "fabric-rke2-cluster-token"
