@@ -15,7 +15,7 @@ services:
       - ./csc478:/home/fabric/csc478
       - ./home/fabric/.ssh:/home/fabric/.ssh
       - ./home/fabric/.fabric:/home/fabric/.fabric
-      - ./home/fabric/workspace:/home/fabric/workspace
+      - ./workspace:/home/fabric/workspace
       - ./utils:/home/fabric/utils
       - ../../../csc478:/opt/csc478
       - ../../../csc468:/opt/csc468
